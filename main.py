@@ -119,12 +119,26 @@ def scan_file():
 
 def convertImageToText(file):
     start_time = datetime.datetime.now()
-    url = "https://api.mindee.net/products/expense_receipts/v2/predict"
+    
+    #nanonets
+    url = "https://app.nanonets.com/api/v2/OCR/Model/a08a0825-d3a7-4b2a-8499-8bbab30e7c1c/LabelUrls/?async=false"
+
+    #mindee
+    #url = "https://api.mindee.net/products/expense_receipts/v2/predict"
     print(file.filename)
     with open('files/' + file.filename, "rb") as myfile:
         files = {"file": myfile}
-        headers = {"X-Inferuser-Token": "89a525a46c61cc8dc7140be161b5eef5"}
-        response = requests.post(url, files=files, headers=headers)
+        
+         #mindee
+        # headers = {"X-Inferuser-Token": "89a525a46c61cc8dc7140be161b5eef5"}
+        # response = requests.post(url, files=files, headers=headers)
+
+        #nanonets
+        headers = {
+            'accept': 'application/x-www-form-urlencoded'
+        }
+        #data = {'urls': ['https://goo.gl/ICoiHc']}
+        response = requests.request('POST', url, headers=headers,auth=requests.auth.HTTPBasicAuth('L5VJsgRnXHIwlr1KYSk2DhwoGeoPp_Y0', ''), files=files)
     return {
         "text": pytesseract.image_to_string(Image.open(file)),
         "time": str((datetime.datetime.now() - start_time).total_seconds()),
